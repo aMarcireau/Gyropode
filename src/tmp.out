@@ -1,0 +1,59 @@
+
+BL51 BANKED LINKER/LOCATER V6.22 - SN: Eval Version
+COPYRIGHT KEIL ELEKTRONIK GmbH 1987 - 2009
+"D:\Gyropode\src\segway.obj"  TO "D:\Gyropode\src\Segway" RS(256) PL(68) PW(78)  
+
+*** WARNING L1: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  INITIALIZEPCA
+    MODULE:  D:\Gyropode\src\segway.obj (SEGWAY)
+
+*** WARNING L1: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  INITIALIZESYSTEMCLOCK
+    MODULE:  D:\Gyropode\src\segway.obj (SEGWAY)
+
+*** WARNING L1: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  INITIALIZEPORTS
+    MODULE:  D:\Gyropode\src\segway.obj (SEGWAY)
+
+*** WARNING L1: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  INITIALIZEUART
+    MODULE:  D:\Gyropode\src\segway.obj (SEGWAY)
+
+*** WARNING L1: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  _INITIALIZETIMER2
+    MODULE:  D:\Gyropode\src\segway.obj (SEGWAY)
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  INITIALIZESYSTEMCLOCK
+    MODULE:  D:\Gyropode\src\segway.obj (SEGWAY)
+    ADDRESS: 0801H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  INITIALIZEPORTS
+    MODULE:  D:\Gyropode\src\segway.obj (SEGWAY)
+    ADDRESS: 0804H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  INITIALIZEUART
+    MODULE:  D:\Gyropode\src\segway.obj (SEGWAY)
+    ADDRESS: 0807H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  _INITIALIZETIMER2
+    MODULE:  D:\Gyropode\src\segway.obj (SEGWAY)
+    ADDRESS: 080DH
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  INITIALIZEPCA
+    MODULE:  D:\Gyropode\src\segway.obj (SEGWAY)
+    ADDRESS: 0810H
+
+******************************************************************************
+* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 0028H BYTE ( 1%) *
+******************************************************************************
+
+>> 
+>> 
+>> 
+Program Size: data=9.0 xdata=0 code=55
+LINK/LOCATE RUN COMPLETE.  10 WARNING(S),  0 ERROR(S)

@@ -8,6 +8,7 @@
 #include "ports.h"
 #include "uart.h"
 #include "timers.h"
+#include "PCA.h"
 
 
 /**
@@ -30,7 +31,11 @@ void timer2Interrupt(void); // Timer 2 interrupt
 void main(void) {
 	initialize();
 
-	while (1) {}
+	while (1) 
+	{
+		PCA0CPH0 = 250;
+	  	PCA0CPH1 = 238;
+	}
 }
 
 
@@ -44,6 +49,7 @@ void initialize(void) {
 	initializePorts();
 	initializeUart();
 	initializeTimer2(0);
+	initializePCA();
 	EA = 1;
 }
 
