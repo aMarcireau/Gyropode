@@ -1,1 +1,0 @@
-"D:\Gyropode\src\segway.obj"  TO "D:\Gyropode\src\Segway" RS(256) PL(68) PW(78)  

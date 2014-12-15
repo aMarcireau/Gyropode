@@ -3,7 +3,8 @@
 /**
  * Initialize system clock
  */
-void initializeSystemClock(void) {
-	OSCICN = 0xC3; // Configure internal oscillator for its lowest frequency
+void initializeSystemClock(void)
+{
+	OSCICN = 0x80; // Configure internal oscillator
 	RSTSRC = 0x04; // Enable missing clock detector
 }
