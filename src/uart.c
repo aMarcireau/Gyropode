@@ -16,8 +16,7 @@ void initializeUart(void) {
  * Surcharge Put_char_ stdio method
  */
 void Put_char_(unsigned char c) {
-	while (TI0 == 0)
-		;
+	while (TI0 == 0);
 	TI0 = 0;
 	SBUF0 = c;
 }
