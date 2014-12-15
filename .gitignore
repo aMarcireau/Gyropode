@@ -2,4 +2,6 @@
 *.project
 Keil*
 .settings
-
+src/*
+!src/*.h
+!src/*.c
