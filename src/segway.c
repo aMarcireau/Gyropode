@@ -7,8 +7,8 @@
 #include "systemClock.h"
 #include "ports.h"
 #include "uart.h"
+#include "motors.h"
 #include "timers.h"
-#include "PCA.h"
 
 
 /**
@@ -27,13 +27,12 @@ void initialize(void);
 /**
  * Main
  */
-void main(void) {
+void main(void)
+{
 	initialize();
 
-	while (1) 
-	{
-		PCA0CPH0 = 250;
-	  	PCA0CPH1 = 238;
+	while (1) {
+		setMotorsSpeed(6);
 	}
 }
 
@@ -41,12 +40,13 @@ void main(void) {
 /**
  * Function definitions
  */
-void initialize(void) {
+void initialize(void)
+{
 	PCA0MD &= ~0x40;
 	initializeSystemClock();
 	initializePorts();
 	initializeUart();
-	initializePCA();
+	initializeMotors();
 	initializeTimer2(25000);
 	EA = 1;
 }

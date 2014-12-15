@@ -3,7 +3,8 @@
 /**
  * Initialize ports
  */
-void initializePorts(void) {
+void initializePorts(void)
+{
 	XBR0 = 0x05;
 	XBR1 = 0x42;
 	P0SKIP = 0xcc;
