@@ -21,8 +21,7 @@ sbit SW2 = P0 ^ 7; // SW2 = '0' means switch pressed
 /**
  * Function prototypes
  */
-void initialize(void);      // Initialize
-void timer2Interrupt(void); // Timer 2 interrupt
+void initialize(void);
 
 
 /**
@@ -42,20 +41,19 @@ void main(void) {
 /**
  * Function definitions
  */
-
-// Initialize
 void initialize(void) {
+	PCA0MD &= ~0x40;
 	initializeSystemClock();
 	initializePorts();
 	initializeUart();
-	initializeTimer2(0);
 	initializePCA();
+	initializeTimer2(25000);
 	EA = 1;
 }
 
-// Timer 2 interrupt
 void timer2Interrupt(void) interrupt 5
 {
 	TF2H = 0;
 	LED = ~LED;
+	printf("%d", LED);
 }
