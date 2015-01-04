@@ -8,21 +8,23 @@
 #include "ports.h"
 #include "uart.h"
 #include "motors.h"
+#include "gy80.h"
 #include "timers.h"
-
 
 /**
  * Constants
  */
-sbit LED = P3 ^ 3; // LED = '1' means ON
-sbit SW2 = P0 ^ 7; // SW2 = '0' means switch pressed
-
+#define SYS_CLOCK 24500000
+#define SMB_FREQUENCY 100000
+sbit SDA = P0 ^ 0;
+sbit SCL = P0 ^ 1;
+sbit LED = P3 ^ 3;
+sbit SW2 = P0 ^ 7;
 
 /**
  * Function prototypes
  */
 void initialize(void);
-
 
 /**
  * Main
@@ -32,10 +34,9 @@ void main(void)
 	initialize();
 
 	while (1) {
-		setMotorsSpeed(6);
+		setMotorsSpeed(-6);
 	}
 }
-
 
 /**
  * Function definitions
@@ -47,7 +48,12 @@ void initialize(void)
 	initializePorts();
 	initializeUart();
 	initializeMotors();
-	initializeTimer2(25000);
+	initializeSMBus();
+	initializeGY80();
+
+	initializeTimer1(10000);
+	initializeTimer2();
+	initializeTimer3(SYSCLK / 12 / 40);
 	EA = 1;
 }
 
