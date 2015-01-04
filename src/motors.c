@@ -17,11 +17,11 @@ void initializeMotors()
 /**
  * Set motor speed
  */
-void setMotorSpeed(unsigned char motorId, int speed)
+void setMotorSpeed(unsigned char motorId, char speed)
 {
-	if (motorId == "r") {
+	if (motorId == 'r') {
 		PCA0CPH0 = 244 + speed;
-	} else if (motorId == "l") {
+	} else if (motorId == 'l') {
 		PCA0CPH1 = 244 + speed;
 	}
 }
@@ -29,8 +29,8 @@ void setMotorSpeed(unsigned char motorId, int speed)
 /**
  * Set motors speed
  */
-void setMotorsSpeed(int speed)
+void setMotorsSpeed(char speed)
 {
-	setMotorSpeed("r", speed);
-	setMotorSpeed("l", -speed);
+	setMotorSpeed('r', speed);
+	setMotorSpeed('l', -speed);
 }
