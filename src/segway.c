@@ -27,7 +27,7 @@ void initialize(void);
  */
 void main(void)
 {
-	initialize(void);
+	initialize();
 
 	while (1) {
 		setMotorsSpeed(-6);
@@ -40,13 +40,13 @@ void main(void)
 void initialize(void)
 {
 	PCA0MD &= ~0x40;
-	initializeSystemClock(void);
-	initializePorts(void);
-	initializeUart(void);
-	initializeMotors(void);
-	initializeGY80(void);
+	initializeSystemClock();
+	initializePorts();
+	initializeUart();
+	initializeMotors();
+	initializeGy80();
 
-	initializeTimer2(void);
+	initializeTimer2();
 	EA = 1;
 }
 

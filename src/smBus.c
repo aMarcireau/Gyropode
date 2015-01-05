@@ -5,7 +5,7 @@
  */
 sbit SDA = P0 ^ 0;             // SDA on pin 0.0
 sbit SCL = P0 ^ 1;             // SCL on pin 0.1
-bit smBusBusy;                 // 1 if the SMBus is beaing used, 0 otherwise
+bit smBusBusy;                 // 1 if the SMBus is being used, 0 otherwise
 bit smBusMode;                 // 1 if the SMBus is in write mode, 0 otherwise
 bit subAddressSent;            // 1 if the sub address has been sent
 bit dataSent;                  // 1 if the data has been sent
@@ -19,6 +19,7 @@ unsigned char smBusData = 0;   // SMBus data container
  */
 void initializeSmBus(void)
 {
+	unsigned char i;
     while (!SDA) {
         XBR1 = 0x40;              // Enable Crossbar
         SCL = 0;                  // Drive the clock low
@@ -37,14 +38,14 @@ void initializeSmBus(void)
 /**
  * Write data on the SMBus
  */
-void writeOnSMBus(unsigned char address, unsigned char subAddress, unsigned char data, bit important)
+void writeOnSmBus(unsigned char address, unsigned char subAddress, unsigned char message, bit important)
 {
     bit success = 0;
     while (!success) {
-        claimSMBus(1);
+        claimSmBus(1);
         smBusAddress = address;
         smBusSubAddress = subAddress;
-        smBusData = data;
+        smBusData = message;
         STA = 1;
         freeSMBus();
 
@@ -59,15 +60,15 @@ void writeOnSMBus(unsigned char address, unsigned char subAddress, unsigned char
 /**
  * Read data from the SMBus
  */
-unsigned char readFromSMBus(unsigned char address, unsigned char subAddress, bit important)
+unsigned char readFromSmBus(unsigned char address, unsigned char subAddress, bit important)
 {
     bit success = 0;
     while (!success) {
-        claimSMBus(0);
+        claimSmBus(0);
         smBusAddress = address;
         smBusSubAddress = subAddress;
         STA = 1;
-        freeSMBus(void);
+        freeSMBus();
 
         if (!important) {
             success = 1;
@@ -82,7 +83,7 @@ unsigned char readFromSMBus(unsigned char address, unsigned char subAddress, bit
 /**
  * Claim the SMBus
  */
-void claimSMBus(bit mode)
+void claimSmBus(bit mode)
 {
 	while (!smBusBusy);
     smBusBusy = 1;
@@ -92,7 +93,7 @@ void claimSMBus(bit mode)
 /**
  * Free the SMBus
  */
-void freeSMBus(void)
+void freeSmBus(void)
 {
     while (!smBusBusy);
 }
@@ -131,7 +132,7 @@ void smBusInterruptServiceRoutine(void) interrupt 7
                         }
                     } else {
                         SMB0DAT = smBusSubAddress;
-                        subAddress = 1;
+                        subAddressSent = 1;
                     }                 
                 } else {
                     STO = 1; // Send STOP condition

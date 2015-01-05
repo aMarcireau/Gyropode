@@ -5,7 +5,7 @@
  */
 void initializeTimer1(unsigned int counts)
 {
-	CKCON |= 0x08  // Timer1 clock source = SYSCLK
+	CKCON |= 0x08; // Timer1 clock source = SYSCLK
 	TMOD = 0x20;   // 8-bit auto-reload mode
     TH1 = -counts; // Overflow value
     TL1 = TH1;     // Initialize timer

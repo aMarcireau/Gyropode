@@ -6,6 +6,6 @@
 
 void initializeTimer2(void);				// Initialize timer 2
 void initializeTimer1(unsigned int counts); // Initialize timer 1
-void initializeTimer1(unsigned int counts); // Initialize timer 3
+void initializeTimer3(unsigned int counts); // Initialize timer 3
 
 #endif // __SEGWAY__TIMERS__
