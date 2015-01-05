@@ -3,18 +3,21 @@
 /**
  * Definitions
  */
-sbit SDA = P0 ^ 0;
-sbit SCL = P0 ^ 1;
-bit smBusBusy;                                 // 1 if the SMBus is beaing used, 0 otherwise
-bit smBusMode;                                 // 1 if the SMBus is in write mode, 0 otherwise
-unsigned char smBusTarget;                     // SMBus target container
-unsigned char smBusRead[SM_BUS_READ_LENGTH];   // SMBus readen data container 
-unsigned char smBusWrite[SM_BUS_WRITE_LENGTH]; // SMBus data to be written container
+sbit SDA = P0 ^ 0;             // SDA on pin 0.0
+sbit SCL = P0 ^ 1;             // SCL on pin 0.1
+bit smBusBusy;                 // 1 if the SMBus is beaing used, 0 otherwise
+bit smBusMode;                 // 1 if the SMBus is in write mode, 0 otherwise
+bit subAddressSent;            // 1 if the sub address has been sent
+bit dataSent;                  // 1 if the data has been sent
+bit smBusFailed;               // 1 if the transfer failed
+unsigned char smBusAddress;    // SMBus address container
+unsigned char smBusSubAddress; // SMBus sub-address container
+unsigned char smBusData = 0;   // SMBus data container
 
 /**
  * Initialize SMBus
  */
-void initializeSmBus()
+void initializeSmBus(void)
 {
     while (!SDA) {
         XBR1 = 0x40;              // Enable Crossbar
@@ -34,25 +37,46 @@ void initializeSmBus()
 /**
  * Write data on the SMBus
  */
-void writeOnSMBus(unsigned char target, unsigned char data)
+void writeOnSMBus(unsigned char address, unsigned char subAddress, unsigned char data, bit important)
 {
-    claimSMBus(1);
-    smBusWrite = data;
-    STA = 1;
-    freeSMBus();
+    bit success = 0;
+    while (!success) {
+        claimSMBus(1);
+        smBusAddress = address;
+        smBusSubAddress = subAddress;
+        smBusData = data;
+        STA = 1;
+        freeSMBus();
+
+        if (!important) {
+            success = 1;
+        } else {
+            success = !smBusFailed;
+        }
+    }
 }
 
 /**
  * Read data from the SMBus
  */
-unsigned char readFromSMBus(unsigned char target)
+unsigned char readFromSMBus(unsigned char address, unsigned char subAddress, bit important)
 {
-    claimSMBus(0);
-    smBusTarget = target;
-    STA = 1;
-    freeSMBus();
+    bit success = 0;
+    while (!success) {
+        claimSMBus(0);
+        smBusAddress = address;
+        smBusSubAddress = subAddress;
+        STA = 1;
+        freeSMBus(void);
 
-    return smBusRead;
+        if (!important) {
+            success = 1;
+        } else {
+            success = !smBusFailed;
+        }
+    }
+
+    return smBusData;
 }
 
 /**
@@ -68,7 +92,7 @@ void claimSMBus(bit mode)
 /**
  * Free the SMBus
  */
-void freeSMBus()
+void freeSMBus(void)
 {
     while (!smBusBusy);
 }
@@ -79,49 +103,48 @@ void freeSMBus()
 void smBusInterruptServiceRoutine(void) interrupt 7
 {
     bit failed = 0;
-    static unsigned char readCounter;
-    static unsigned char writeCounter;
 
     if (ARBLOST == 0) {
         switch (SMB0CN & 0xF0) {
 
             case SMB_MTSTA:
-                SMB0DAT = smBusTarget; // Load address of the target slave
-                SMB0DAT &= 0xFE;       // Clear the LSB of the address for the R/W bit
-                SMB0DAT |= smBusMode;  // Load R/W bit
-                STA = 0;               // Manually clear START bit
-                readCounter = 1;       // Reset counter
-                writeCounter = 1;      // Reset counter
+                SMB0DAT = smBusAddress; // Load address of the target slave
+                SMB0DAT &= 0xFE;        // Clear the LSB of the address for the R/W bit
+                SMB0DAT |= smBusMode;   // Load R/W bit
+                subAddressSent = 0;     // Sub address not sent yet
+                dataSent = 0;           // Data not sent yet
+                smBusFailed = 0;        // Transfer has not failed yet
+                STA = 0;                // Manually clear START bit
             break;
 
             case SMB_MTDB:
                 if (ACK) {
-                    if (smBusMode == 1) {
-                        if (writeCounter <= SM_BUS_WRITE_LENGTH) {
-                            SMB0DAT = smBusWrite[writeCounter - 1];
-                            writeCounter++;
-                        } else {
-                            STO = 1;       // Set STO to terminate transfer
-                            smBusBusy = 0; // And free SMBus interface
+                    if (subAddressSent) {
+                        if (smBusMode) {
+                            if (dataSent) {
+                                STO = 1;       // Set STO to terminate transfer
+                                smBusBusy = 0; // And free SMBus interface
+                            } else {
+                                SMB0DAT = smBusData;
+                                dataSent = 1;
+                            }
                         }
-                    }
+                    } else {
+                        SMB0DAT = smBusSubAddress;
+                        subAddress = 1;
+                    }                 
                 } else {
-                    STO = 1; // Send STOP condition, followed
-                    STA = 1; // By a START
+                    STO = 1; // Send STOP condition
+                    STA = 1; // Send START condition
+                    failed = 1;
                 }
             break;
 
             case SMB_MRDB:
-                if (readCounter < SM_BUS_READ_LENGTH) {
-                    smBusRead[readCounter - 1] = SMB0DAT;
-                    ACK = 1;
-                    readCounter++;
-                } else {
-                    smBusRead[readCounter - 1] = SMB0DAT;
-                    smBusBusy = 0;
-                    ACK = 0;
-                    STO = 1;
-                }
+                smBusData = SMB0DAT;
+                smBusBusy = 0;
+                ACK = 0;
+                STO = 1;
             break;
 
             default:
@@ -139,6 +162,7 @@ void smBusInterruptServiceRoutine(void) interrupt 7
         STO = 0;
         ACK = 0;
         smBusBusy = 0;   // Free SMBus
+        smBusFailed = 1; // Transfer failed
         failed = 0;
     }
 
@@ -148,7 +172,7 @@ void smBusInterruptServiceRoutine(void) interrupt 7
 /**
  * Timer 3 Interrupt Service Routine for the SMBus
  */
-void timer3InterruptServiceRoutine (void) interrupt 14
+void timer3InterruptServiceRoutine(void) interrupt 14
 {
     SMB0CF &= ~0x80; // Disable SMBus
     SMB0CF |= 0x80;  // Re-enable SMBus

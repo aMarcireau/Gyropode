@@ -7,9 +7,14 @@
 #include "smBus.h"
 #include "timers.h"
 
-#define GYROSCOPE_ADDRESS 0x69;
-#define ACCELEROMETER_ADDRESS 0x53;
+#define SYS_CLOCK 24500000
+#define SMB_FREQUENCY 100000
+#define ACCELEROMETER_ADDRESS 0x53; // ADXL345 
+#define GYROSCOPE_ADDRESS 0x69;     // L3G4200D
 
-void initializeGY80(void); // Initialize GY80
+void initializeGY80(void);  // Initialize GY80
+int getXAcceleration(void); // Get X acceleration
+
+
 
 #endif // __SEGWAY__GY_80__

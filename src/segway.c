@@ -14,8 +14,6 @@
 /**
  * Constants
  */
-#define SYS_CLOCK 24500000
-#define SMB_FREQUENCY 100000
 sbit LED = P3 ^ 3;
 sbit SW2 = P0 ^ 7;
 
@@ -29,7 +27,7 @@ void initialize(void);
  */
 void main(void)
 {
-	initialize();
+	initialize(void);
 
 	while (1) {
 		setMotorsSpeed(-6);
@@ -42,13 +40,13 @@ void main(void)
 void initialize(void)
 {
 	PCA0MD &= ~0x40;
-	initializeSystemClock();
-	initializePorts();
-	initializeUart();
-	initializeMotors();
-	initializeGY80();
+	initializeSystemClock(void);
+	initializePorts(void);
+	initializeUart(void);
+	initializeMotors(void);
+	initializeGY80(void);
 
-	initializeTimer2();
+	initializeTimer2(void);
 	EA = 1;
 }
 

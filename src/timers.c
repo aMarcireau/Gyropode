@@ -15,7 +15,7 @@ void initializeTimer1(unsigned int counts)
 /**
  * Initialize timer 2
  */
-void initializeTimer2()
+void initializeTimer2(void)
 {
 	TMR2CN = 0x00;  // Stop Timer 2 and clear TF2
 	CKCON &= ~0x60;	// Timer 2 clocked based on T2XCLK
