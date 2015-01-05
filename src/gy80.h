@@ -14,6 +14,8 @@
 
 void initializeGY80(void);  // Initialize GY80
 int getXAcceleration(void); // Get X acceleration
+int getYAcceleration(void); // Get Y acceleration
+int getZAcceleration(void); // Get Z acceleration
 
 
 
