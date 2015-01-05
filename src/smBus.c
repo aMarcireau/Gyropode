@@ -1,6 +1,17 @@
 #include "smBus.h"
 
 /**
+ * Definitions
+ */
+sbit SDA = P0 ^ 0;
+sbit SCL = P0 ^ 1;
+bit smBusBusy;                                 // 1 if the SMBus is beaing used, 0 otherwise
+bit smBusMode;                                 // 1 if the SMBus is in write mode, 0 otherwise
+unsigned char smBusTarget;                     // SMBus target container
+unsigned char smBusRead[SM_BUS_READ_LENGTH];   // SMBus readen data container 
+unsigned char smBusWrite[SM_BUS_WRITE_LENGTH]; // SMBus data to be written container
+
+/**
  * Initialize SMBus
  */
 void initializeSmBus()
@@ -23,7 +34,7 @@ void initializeSmBus()
 /**
  * Write data on the SMBus
  */
-void writeOnSMBus(unsigned char data, unsigned char target)
+void writeOnSMBus(unsigned char target, unsigned char data)
 {
     claimSMBus(1);
     smBusWrite = data;
@@ -79,7 +90,8 @@ void smBusInterruptServiceRoutine(void) interrupt 7
                 SMB0DAT &= 0xFE;       // Clear the LSB of the address for the R/W bit
                 SMB0DAT |= smBusMode;  // Load R/W bit
                 STA = 0;               // Manually clear START bit
-                counter = 1;           // Reset counter
+                readCounter = 1;       // Reset counter
+                writeCounter = 1;      // Reset counter
             break;
 
             case SMB_MTDB:
@@ -87,7 +99,7 @@ void smBusInterruptServiceRoutine(void) interrupt 7
                     if (smBusMode == 1) {
                         if (writeCounter <= SM_BUS_WRITE_LENGTH) {
                             SMB0DAT = smBusWrite[writeCounter - 1];
-                            counter++;
+                            writeCounter++;
                         } else {
                             STO = 1;       // Set STO to terminate transfer
                             smBusBusy = 0; // And free SMBus interface
@@ -100,10 +112,10 @@ void smBusInterruptServiceRoutine(void) interrupt 7
             break;
 
             case SMB_MRDB:
-                if (writeCounter < SM_BUS_READ_LENGTH) {
+                if (readCounter < SM_BUS_READ_LENGTH) {
                     smBusRead[readCounter - 1] = SMB0DAT;
                     ACK = 1;
-                    counter++;
+                    readCounter++;
                 } else {
                     smBusRead[readCounter - 1] = SMB0DAT;
                     smBusBusy = 0;

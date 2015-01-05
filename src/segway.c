@@ -16,8 +16,6 @@
  */
 #define SYS_CLOCK 24500000
 #define SMB_FREQUENCY 100000
-sbit SDA = P0 ^ 0;
-sbit SCL = P0 ^ 1;
 sbit LED = P3 ^ 3;
 sbit SW2 = P0 ^ 7;
 
@@ -48,12 +46,9 @@ void initialize(void)
 	initializePorts();
 	initializeUart();
 	initializeMotors();
-	initializeSMBus();
 	initializeGY80();
 
-	initializeTimer1(10000);
 	initializeTimer2();
-	initializeTimer3(SYSCLK / 12 / 40);
 	EA = 1;
 }
 

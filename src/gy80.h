@@ -4,6 +4,9 @@
 #include <compiler_defs.h>
 #include <C8051f310_defs.h>
 
+#include "smBus.h"
+#include "timers.h"
+
 #define GYROSCOPE_ADDRESS 0x69;
 #define ACCELEROMETER_ADDRESS 0x53;
 
