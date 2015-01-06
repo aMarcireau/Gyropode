@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include "systemClock.h"
 #include "ports.h"
-#include "uart.h"
 #include "motors.h"
 #include "gy80.h"
 #include "timers.h"
@@ -14,10 +13,6 @@
 /**
  * Constants
  */
-#define SYS_CLOCK 24500000
-#define SMB_FREQUENCY 100000
-sbit SDA = P0 ^ 0;
-sbit SCL = P0 ^ 1;
 sbit LED = P3 ^ 3;
 sbit SW2 = P0 ^ 7;
 
@@ -31,9 +26,16 @@ void initialize(void);
  */
 void main(void)
 {
+	int xAcceleration;
+	int yAcceleration;
+	int zAcceleration;
 	initialize();
 
 	while (1) {
+		xAcceleration = getXAcceleration();
+		yAcceleration = getYAcceleration();
+		zAcceleration = getZAcceleration();
+
 		setMotorsSpeed(-6);
 	}
 }
@@ -46,20 +48,16 @@ void initialize(void)
 	PCA0MD &= ~0x40;
 	initializeSystemClock();
 	initializePorts();
-	initializeUart();
 	initializeMotors();
-	initializeSMBus();
-	initializeGY80();
-
-	initializeTimer1(10000);
 	initializeTimer2();
-	initializeTimer3(SYSCLK / 12 / 40);
+
 	EA = 1;
+
+	initializeGy80();
 }
 
 void timer2Interrupt(void) interrupt 5
 {
 	TF2H = 0;
 	LED = ~LED;
-	printf("%d", LED);
 }

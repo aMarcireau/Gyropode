@@ -3,7 +3,7 @@
 /**
  * Initialize motors
  */
-void initializeMotors()
+void initializeMotors(void)
 {
 	CR = 1;
 	PCA0CPM0 = 0xc2;
