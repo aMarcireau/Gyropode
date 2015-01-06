@@ -3,17 +3,17 @@
 /**
  * Definitions
  */
-const unsigned char accelerometerAddress = 0x53;
-const unsigned char gyroscopeAddress = 0x69;
+const unsigned char accelerometerAddress = 0x69;
+//const unsigned char gyroscopeAddress = 0x69;
 
 /**
  * Initialize gy80
  */
 void initializeGy80(void)
 {
-	initializeSmBus();
 	initializeTimer1(SYSTEM_CLOCK / SM_BUS_FREQUENCY / 3);
 	initializeTimer3(SYSTEM_CLOCK / 12 / 40);
+	initializeSmBus();
 
 	writeOnSmBus(accelerometerAddress, 0x2D, 0x08, 1); // Switch on accelerometer
 }

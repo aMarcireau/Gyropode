@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include "systemClock.h"
 #include "ports.h"
-#include "uart.h"
 #include "motors.h"
 #include "gy80.h"
 #include "timers.h"
@@ -27,9 +26,16 @@ void initialize(void);
  */
 void main(void)
 {
+	int xAcceleration;
+	int yAcceleration;
+	int zAcceleration;
 	initialize();
 
 	while (1) {
+		xAcceleration = getXAcceleration();
+		yAcceleration = getYAcceleration();
+		zAcceleration = getZAcceleration();
+
 		setMotorsSpeed(-6);
 	}
 }
@@ -42,17 +48,16 @@ void initialize(void)
 	PCA0MD &= ~0x40;
 	initializeSystemClock();
 	initializePorts();
-	initializeUart();
 	initializeMotors();
-	initializeGy80();
-
 	initializeTimer2();
+
 	EA = 1;
+
+	initializeGy80();
 }
 
 void timer2Interrupt(void) interrupt 5
 {
 	TF2H = 0;
 	LED = ~LED;
-	printf("%d", LED);
 }

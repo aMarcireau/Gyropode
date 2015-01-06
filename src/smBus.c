@@ -12,7 +12,7 @@ bit dataSent;                  // 1 if the data has been sent
 bit smBusFailed;               // 1 if the transfer failed
 unsigned char smBusAddress;    // SMBus address container
 unsigned char smBusSubAddress; // SMBus sub-address container
-unsigned char smBusData = 0;   // SMBus data container
+unsigned char smBusData;       // SMBus data container
 
 /**
  * Initialize SMBus
@@ -21,18 +21,17 @@ void initializeSmBus(void)
 {
 	unsigned char i;
     while (!SDA) {
-        XBR1 = 0x40;              // Enable Crossbar
         SCL = 0;                  // Drive the clock low
         for(i = 0; i < 255; i++); // Hold the clock low
         SCL = 1;                  // Release the clock
-        while(!SCL);              // Wait for open-drain clock output to rise
+        while (!SCL);             // Wait for open-drain clock output to rise
         for(i = 0; i < 10; i++);  // Hold the clock high
-        XBR1 = 0x00;              // Disable Crossbar
     }
 
     SMB0CF = 0x5D;
     SMB0CF |= 0x80;
     EIE1 |= 0x01;
+    smBusBusy = 0;
 }
 
 /**
@@ -85,7 +84,7 @@ unsigned char readFromSmBus(unsigned char address, unsigned char subAddress, bit
  */
 void claimSmBus(bit mode)
 {
-	while (!smBusBusy);
+	while (smBusBusy);
     smBusBusy = 1;
     smBusMode = mode;
 }
@@ -95,7 +94,7 @@ void claimSmBus(bit mode)
  */
 void freeSmBus(void)
 {
-    while (!smBusBusy);
+    while (smBusBusy);
 }
 
 /**
@@ -109,13 +108,13 @@ void smBusInterruptServiceRoutine(void) interrupt 7
         switch (SMB0CN & 0xF0) {
 
             case SMB_MTSTA:
-                SMB0DAT = smBusAddress; // Load address of the target slave
-                SMB0DAT &= 0xFE;        // Clear the LSB of the address for the R/W bit
-                SMB0DAT |= smBusMode;   // Load R/W bit
-                subAddressSent = 0;     // Sub address not sent yet
-                dataSent = 0;           // Data not sent yet
-                smBusFailed = 0;        // Transfer has not failed yet
-                STA = 0;                // Manually clear START bit
+                SMB0DAT = smBusAddress  << 1; // Load address of the target slave
+                SMB0DAT &= 0xFE;              // Clear the LSB of the address for the R/W bit
+                SMB0DAT |= smBusMode;         // Load R/W bit
+                subAddressSent = 0;           // Sub address not sent yet
+                dataSent = 0;                 // Data not sent yet
+                smBusFailed = 0;              // Transfer has not failed yet
+                STA = 0;                      // Manually clear START bit
             break;
 
             case SMB_MTDB:
@@ -179,5 +178,6 @@ void timer3InterruptServiceRoutine(void) interrupt 14
     SMB0CF |= 0x80;  // Re-enable SMBus
     TMR3CN &= ~0x80; // Clear Timer3 interrupt-pending flag
     STA = 0;
-    smBusBusy = 0;    // Free SMBus
+    smBusBusy = 0;   // Free SMBus
+    smBusFailed = 1; // Transfer failed
 }

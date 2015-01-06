@@ -31,9 +31,9 @@ void initializeTimer2(void)
 void initializeTimer3(unsigned int counts)
 {
 	TMR3CN = 0x00;    // 16-bit auto-reload, low-byte interrupt disabled
-	CKCON &= ~0x40;   // Timer3 clock source = SYSCLK / 12	
+	CKCON &= ~0x40;   // Timer3 clock source = SYSCLK / 12
 	TMR3RL = -counts; // Overflow value
-    TMR3 = TMR3RL;    // Set to reload immediately 
-    EIE1 |= 0x80;     // Timer3 interrupt enable   
-    TMR3CN |= 0x04;   // Start Timer3            
+    TMR3 = TMR3RL;    // Set to reload immediately
+    EIE1 |= 0x80;     // Timer3 interrupt enable
+    TMR3CN |= 0x04;   // Start Timer3
 }
