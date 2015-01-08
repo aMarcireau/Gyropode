@@ -3,50 +3,56 @@
 /**
  * Definitions
  */
-const unsigned char accelerometerAddress = 0x69;
-//const unsigned char gyroscopeAddress = 0x69;
+const unsigned char accelerometerAddress = 0x53;
+const unsigned char gyroscopeAddress = 0x69;
 
 /**
  * Initialize gy80
  */
 void initializeGy80(void)
 {
-	initializeTimer1(SYSTEM_CLOCK / SM_BUS_FREQUENCY / 3);
-	initializeTimer3(SYSTEM_CLOCK / 12 / 40);
-	initializeSmBus();
+	unsigned char test = 0;
 
-	writeOnSmBus(accelerometerAddress, 0x2D, 0x08, 1); // Switch on accelerometer
+	registerSmBus(accelerometerAddress, 0x2d); // Turn on accelerometer
+	writeOnSmBus(0x08);
+	stopSmBus();
+
+	registerSmBus(accelerometerAddress, 0x2d);
+	addressSmBus(accelerometerAddress, 1);
+	test = readFromSmBus();
+	notAcknowledgeSmBus();
+	stopSmBus();
 }
 
 /**
- * Get X acceleration
+ * Get acceleration
  */
-int getXAcceleration(void)
+void getAccelerations(int accelerations[3])
 {
-	int x0 = (int)readFromSmBus(accelerometerAddress, 0x32, 1);
-	int x1 = (int)readFromSmBus(accelerometerAddress, 0x33, 1) << 8;
+	int x0 = 0;
+	int x1 = 0;
+	int y0 = 0;
+	int y1 = 0;
+	int z0 = 0;
+	int z1 = 0;
 
-	return x0 + x1;
-}
+	registerSmBus(accelerometerAddress, 0x32);
+	addressSmBus(accelerometerAddress, 1);
+	x0 = (int)readFromSmBus();
+	acknowledgeSmBus();
+	x1 = (int)readFromSmBus();
+	acknowledgeSmBus();
+	y0 = (int)readFromSmBus();
+	acknowledgeSmBus();
+	y1 = (int)readFromSmBus();
+	acknowledgeSmBus();
+	z0 = (int)readFromSmBus();
+	acknowledgeSmBus();
+	z1 = (int)readFromSmBus();
+	notAcknowledgeSmBus();
+	stopSmBus();
 
-/**
- * Get Y acceleration
- */
-int getYAcceleration(void)
-{
-	int y0 = (int)readFromSmBus(accelerometerAddress, 0x34, 1);
-	int y1 = (int)readFromSmBus(accelerometerAddress, 0x35, 1) << 8;
-
-	return y0 + y1;
-}
-
-/**
- * Get Z acceleration
- */
-int getZAcceleration(void)
-{
-	int z0 = (int)readFromSmBus(accelerometerAddress, 0x36, 1);
-	int z1 = (int)readFromSmBus(accelerometerAddress, 0x37, 1) << 8;
-
-	return z0 + z1;
+	accelerations[0] = (x1 << 8) | x0;
+	accelerations[0] = (y1 << 8) | y0;
+	accelerations[0] = (z1 << 8) | z0;
 }

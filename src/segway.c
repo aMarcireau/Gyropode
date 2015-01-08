@@ -7,6 +7,7 @@
 #include "systemClock.h"
 #include "ports.h"
 #include "motors.h"
+#include "smBus.h"
 #include "gy80.h"
 #include "timers.h"
 
@@ -26,15 +27,11 @@ void initialize(void);
  */
 void main(void)
 {
-	int xAcceleration;
-	int yAcceleration;
-	int zAcceleration;
+	int accelerations[3];
 	initialize();
 
 	while (1) {
-		xAcceleration = getXAcceleration();
-		yAcceleration = getYAcceleration();
-		zAcceleration = getZAcceleration();
+		getAccelerations(accelerations);
 
 		setMotorsSpeed(-6);
 	}
@@ -49,6 +46,7 @@ void initialize(void)
 	initializeSystemClock();
 	initializePorts();
 	initializeMotors();
+	initializeSmBus();
 	initializeTimer2();
 
 	EA = 1;
@@ -56,7 +54,7 @@ void initialize(void)
 	initializeGy80();
 }
 
-void timer2Interrupt(void) interrupt 5
+void timer2InterruptServiceRoutine(void) interrupt INTERRUPT_TIMER2
 {
 	TF2H = 0;
 	LED = ~LED;
