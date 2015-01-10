@@ -34,3 +34,17 @@ void setMotorsSpeed(char speed)
 	setMotorSpeed('r', speed);
 	setMotorSpeed('l', -speed);
 }
+
+/**
+ * Filter speed
+ */
+char speedFilter(int speed)
+{
+	if (speed > SPEED_MAX) {
+		speed = SPEED_MAX;
+	} else if (speed < SPEED_MIN) {
+		speed = SPEED_MIN;
+	}
+
+	return (char)speed;
+}

@@ -3,8 +3,8 @@
 /**
  * Definitions
  */
-sbit SDA = P0 ^ 0;             // SDA on pin 0.0
-sbit SCL = P0 ^ 1;             // SCL on pin 0.1
+sbit SDA = P0 ^ 0; // SDA on pin 0.0
+sbit SCL = P0 ^ 1; // SCL on pin 0.1
 
 /**
  * Initialize SMBus
