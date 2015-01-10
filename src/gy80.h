@@ -7,6 +7,7 @@
 #include "smBus.h"
 
 void initializeGy80(void);  // Initialize GY80
-void getAccelerations(int accelerations[3]); // Get acceleration
+void getAccelerations(int accelerations[3]); // Get accelerations
+void getRotations(int rotations[3]);         // Get rotations
 
 #endif // __SEGWAY__GY_80__
