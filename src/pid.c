@@ -24,7 +24,7 @@ void initializePid(void)
 /**
  * PID transfer function
  */
-char pidTransferFunction(int accelerometerAcceleration, int gyroscopeSpeed, int angleTarget) {
+int pidTransferFunction(int accelerometerAcceleration, int gyroscopeSpeed, int angleTarget) {
 	int newMeasuredGyroscopePosition;
 	
 	accelerometerSpeed = integrate(accelerometerSpeed, accelerometerAcceleration);

@@ -12,7 +12,7 @@
 #define KP 1
 #define ACCELEROMETER_GYROSCOPE_RATIO 0.5
 
-char pidTransferFunction(int currentAccelerometerAcceleration, int currentGyroscopeSpeed, int angleTarget); // PID transfer function
-void initializePid(void);                                                                                   // Reset zero
+int pidTransferFunction(int currentAccelerometerAcceleration, int currentGyroscopeSpeed, int angleTarget); // PID transfer function
+void initializePid(void);                                                                                  // Reset zero
 
 #endif // __SEGWAY__PID__
