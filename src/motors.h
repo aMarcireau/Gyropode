@@ -4,8 +4,12 @@
 #include <compiler_defs.h>
 #include <C8051f310_defs.h>
 
-void initializeMotors(void); 						  // Initialize motors
-void setMotorsSpeed(int speed);					      // Set motors speed
-void setMotorSpeed(unsigned char motorId, int speed); // Set motor speed
+#define SPEED_MAX 6
+#define SPEED_MIN -6
+
+void initializeMotors(void); 						   // Initialize motors
+void setMotorsSpeed(char speed);				       // Set motors speed
+void setMotorSpeed(unsigned char motorId, char speed); // Set motor speed
+char speedFilter(int);								   // Filter speed
 
 #endif // __SEGWAY__MOTORS__

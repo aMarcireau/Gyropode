@@ -4,14 +4,20 @@
 #include <compiler_defs.h>
 #include <C8051f310_defs.h>
 
-#define SMB_MTSTA 0xE0 // (MT) start transmitted
-#define SMB_MTDB 0xC0  // (MT) data byte transmitted
-#define SMB_MRDB 0x80  // (MR) data byte received
+#include "timers.h"
 
-void initializeSmBus(void);               	 					                                          // Initialize the SMBus
-unsigned char readFromSmBus(unsigned char address, unsigned char subAddress, bit important);   		      // Read data from the SMBus
-void writeOnSmBus(unsigned char address, unsigned char subAddress, unsigned char message, bit important); // Write data on the SMBus
-void claimSmBus(bit mode);  								 					                          // Claim the SMBus
-void freeSmBus(void);	    								 				                              // Free the SMBus
+#define SYSTEM_CLOCK 24500000
+#define SM_BUS_FREQUENCY 10000
+
+void initializeSmBus(void);                                               // Initialize SMBus
+void runSmBus(void);                                                      // Run SMBus
+void startSmBus(void);                                                    // Start SMBus
+void acknowledgeSmBus(void);                                              // Acknowledge SMBus
+void notAcknowledgeSmBus(void);                                           // Not acknowledge SMBus
+void stopSmBus(void);                                                     // Stop SMBus transmission
+void addressSmBus(unsigned char address, bit read);                       // Target an address on the SMBus
+void registerSmBus(unsigned char address, unsigned char registerAddress); // Target a register on the SMBus
+void writeOnSmBus(unsigned char message);                                 // Write data on the SMBus
+unsigned char readFromSmBus();                                            // Read data from the SMBus
 
 #endif // __SEGWAY__SM_BUS__

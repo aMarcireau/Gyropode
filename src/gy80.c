@@ -3,50 +3,89 @@
 /**
  * Definitions
  */
-const unsigned char accelerometerAddress = 0x69;
-//const unsigned char gyroscopeAddress = 0x69;
+const unsigned char accelerometerAddress = 0x53; // ADXL345
+const unsigned char gyroscopeAddress = 0x69;     // L3G4200D
 
 /**
  * Initialize gy80
  */
 void initializeGy80(void)
 {
-	initializeTimer1(SYSTEM_CLOCK / SM_BUS_FREQUENCY / 3);
-	initializeTimer3(SYSTEM_CLOCK / 12 / 40);
-	initializeSmBus();
+	unsigned char test = 0;
 
-	writeOnSmBus(accelerometerAddress, 0x2D, 0x08, 1); // Switch on accelerometer
+	// Turn on accelerometer
+	registerSmBus(accelerometerAddress, 0x2d);
+	writeOnSmBus(0x08);
+	stopSmBus();
+
+	// Turn on gyroscope
+	registerSmBus(gyroscopeAddress, 0x20);
+	writeOnSmBus(0xff);
+	stopSmBus();
 }
 
 /**
- * Get X acceleration
+ * Get accelerations
  */
-int getXAcceleration(void)
+void getAccelerations(int accelerations[3])
 {
-	int x0 = (int)readFromSmBus(accelerometerAddress, 0x32, 1);
-	int x1 = (int)readFromSmBus(accelerometerAddress, 0x33, 1) << 8;
+	int x0 = 0;
+	int x1 = 0;
+	int y0 = 0;
+	int y1 = 0;
+	int z0 = 0;
+	int z1 = 0;
 
-	return x0 + x1;
+	registerSmBus(accelerometerAddress, 0x32);
+	addressSmBus(accelerometerAddress, 1);
+	x0 = (int)readFromSmBus();
+	acknowledgeSmBus();
+	x1 = (int)readFromSmBus();
+	acknowledgeSmBus();
+	y0 = (int)readFromSmBus();
+	acknowledgeSmBus();
+	y1 = (int)readFromSmBus();
+	acknowledgeSmBus();
+	z0 = (int)readFromSmBus();
+	acknowledgeSmBus();
+	z1 = (int)readFromSmBus();
+	notAcknowledgeSmBus();
+	stopSmBus();
+
+	accelerations[0] = (x1 << 8) | x0;
+	accelerations[0] = (y1 << 8) | y0;
+	accelerations[0] = (z1 << 8) | z0;
 }
 
 /**
- * Get Y acceleration
+ * Get rotations
  */
-int getYAcceleration(void)
+void getRotations(int rotations[3])
 {
-	int y0 = (int)readFromSmBus(accelerometerAddress, 0x34, 1);
-	int y1 = (int)readFromSmBus(accelerometerAddress, 0x35, 1) << 8;
+	int x0 = 0;
+	int x1 = 0;
+	int y0 = 0;
+	int y1 = 0;
+	int z0 = 0;
+	int z1 = 0;
 
-	return y0 + y1;
-}
+	registerSmBus(gyroscopeAddress, 0x28);
+	addressSmBus(gyroscopeAddress, 1);
+	x0 = (int)readFromSmBus();
+	acknowledgeSmBus();
+	x1 = (int)readFromSmBus();
+	acknowledgeSmBus();
+	y0 = (int)readFromSmBus();
+	acknowledgeSmBus();
+	y1 = (int)readFromSmBus();
+	acknowledgeSmBus();
+	z0 = (int)readFromSmBus();
+	acknowledgeSmBus();
+	z1 = (int)readFromSmBus();
+	notAcknowledgeSmBus();
+	stopSmBus();
 
-/**
- * Get Z acceleration
- */
-int getZAcceleration(void)
-{
-	int z0 = (int)readFromSmBus(accelerometerAddress, 0x36, 1);
-	int z1 = (int)readFromSmBus(accelerometerAddress, 0x37, 1) << 8;
-
-	return z0 + z1;
+	rotations[0] = (x1 << 8) | x0;
+	rotations[0] = (y1 << 8) | y0;
+	rotations[0] = (z1 << 8) | z0;
 }

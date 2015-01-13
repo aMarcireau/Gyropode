@@ -7,14 +7,24 @@
 #include "systemClock.h"
 #include "ports.h"
 #include "motors.h"
+#include "smBus.h"
 #include "gy80.h"
 #include "timers.h"
+#include "pid.h"
 
 /**
  * Constants
  */
+#define TARGET_ANGLE 0
 sbit LED = P3 ^ 3;
 sbit SW2 = P0 ^ 7;
+
+/**
+ * Definitions
+ */
+bit timer2Flag;
+int accelerations[3];
+int rotations[3];
 
 /**
  * Function prototypes
@@ -26,17 +36,23 @@ void initialize(void);
  */
 void main(void)
 {
-	int xAcceleration;
-	int yAcceleration;
-	int zAcceleration;
 	initialize();
 
 	while (1) {
-		xAcceleration = getXAcceleration();
-		yAcceleration = getYAcceleration();
-		zAcceleration = getZAcceleration();
-
-		setMotorsSpeed(-6);
+		if (SW2) {
+			LED = 1;
+			initializePid();
+		} else if (timer2Flag) {
+			timer2Flag = 0;
+			LED = ~LED;
+			getAccelerations(accelerations);
+			getRotations(rotations);
+			setMotorsSpeed(pidTransferFunction(
+				accelerations[1], 
+				rotations[2], 
+				TARGET_ANGLE
+			));
+		}
 	}
 }
 
@@ -49,15 +65,16 @@ void initialize(void)
 	initializeSystemClock();
 	initializePorts();
 	initializeMotors();
+	initializeSmBus();
 	initializeTimer2();
-
+	timer2Flag = 0;
 	EA = 1;
-
 	initializeGy80();
+	initializePid();
 }
 
-void timer2Interrupt(void) interrupt 5
+void timer2InterruptServiceRoutine(void) interrupt INTERRUPT_TIMER2
 {
 	TF2H = 0;
-	LED = ~LED;
+	timer2Flag = 1;
 }
