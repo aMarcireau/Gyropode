@@ -39,7 +39,7 @@ void main(void)
 	initialize();
 
 	while (1) {
-		if (SW2) {
+		if (!SW2) {
 			LED = 1;
 			initializePid();
 		} else if (timer2Flag) {
