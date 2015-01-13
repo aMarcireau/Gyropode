@@ -48,8 +48,8 @@ void main(void)
 			getAccelerations(accelerations);
 			getRotations(rotations);
 			setMotorsSpeed(pidTransferFunction(
-				accelerations[1], 
-				rotations[2], 
+				accelerations[2],
+				-rotations[0],
 				TARGET_ANGLE
 			));
 		}
