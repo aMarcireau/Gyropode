@@ -20,7 +20,7 @@ void initializeGy80(void)
 
 	// Turn on gyroscope
 	registerSmBus(gyroscopeAddress, 0x20);
-	writeOnSmBus(0xff);
+	writeOnSmBus(0x1f);
 	stopSmBus();
 }
 
@@ -53,8 +53,8 @@ void getAccelerations(int accelerations[3])
 	stopSmBus();
 
 	accelerations[0] = (x1 << 8) | x0;
-	accelerations[0] = (y1 << 8) | y0;
-	accelerations[0] = (z1 << 8) | z0;
+	accelerations[1] = (y1 << 8) | y0;
+	accelerations[2] = (z1 << 8) | z0;
 }
 
 /**
@@ -86,6 +86,6 @@ void getRotations(int rotations[3])
 	stopSmBus();
 
 	rotations[0] = (x1 << 8) | x0;
-	rotations[0] = (y1 << 8) | y0;
-	rotations[0] = (z1 << 8) | z0;
+	rotations[1] = (y1 << 8) | y0;
+	rotations[2] = (z1 << 8) | z0;
 }
