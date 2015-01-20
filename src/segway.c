@@ -36,9 +36,6 @@ void initialize(void);
  */
 void main(void)
 {
-	int speedDebug;
-
-
 	initialize();
 
 	while (1) {
@@ -54,8 +51,8 @@ void main(void)
 			setMotorsSpeed(
 				pidTransferFunction(
 					getError(
-						accelerations[2],
-						-rotations[0],
+						-accelerations[2],
+						rotations[0],
 						TARGET_ANGLE
 					)
 				)

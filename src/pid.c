@@ -5,41 +5,50 @@
  */
 int accelerometerSpeed;
 int accelerometerPosition;
-int gyroscopePosition;
-int measuredGyroscopePosition;
+int gyroscopeAngle;
 int error;
 int integratedError;
-int speed;
+int resetCounter;
 
 /**
- * Reset zero
+ * Initialize PID
  */
 void initializePid(void)
 {
-    accelerometerSpeed = 0;
-    accelerometerPosition = 0;
-    gyroscopePosition = 0;
-    measuredGyroscopePosition = 0;
+	resetMeasure();
     error = 0;
     integratedError = 0;
+
 }
+
+/**
+ * Reset measure
+ */
+void resetMeasure(void)
+{
+    accelerometerSpeed = 0;
+    accelerometerPosition = 0;
+    gyroscopeAngle = 0;
+    resetCounter = 0;
+}
+
 
 /**
  * Get error (command - measured)
  */
 int getError(int accelerometerAcceleration, int gyroscopeSpeed, int angleTarget) {
-	int newMeasuredGyroscopePosition;
+	resetCounter++;
+	if (resetCounter >= RESET_VALUE) {
+		resetMeasure();
+	}
 
 	accelerometerSpeed = integrate(accelerometerSpeed, accelerometerAcceleration);
-	accelerometerPosition = lowPassFilter(accelerometerPosition, integrate(accelerometerPosition, accelerometerSpeed));
-
-	newMeasuredGyroscopePosition = integrate(gyroscopePosition, gyroscopeSpeed);
-	gyroscopePosition = highPassFilter(gyroscopePosition, difference(newMeasuredGyroscopePosition, measuredGyroscopePosition));
-	measuredGyroscopePosition = newMeasuredGyroscopePosition;
+	accelerometerPosition = integrate(accelerometerPosition, accelerometerSpeed);
+	gyroscopeAngle = integrate(gyroscopeAngle, gyroscopeSpeed);
 
 	return difference(angleTarget, segment(
-		checkOverflow(HEIGHT * accelerometerPosition), 
-		gyroscopePosition, 
+		(int)((float)POSITION_TO_ANGLE * (float)accelerometerPosition), 
+		gyroscopeAngle,
 		ACCELEROMETER_GYROSCOPE_RATIO
 	));
 }

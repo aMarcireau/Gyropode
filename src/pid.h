@@ -8,17 +8,21 @@
 #include "motors.h"
 
 #define HEIGHT 0.1
-#define KI 0
+#define KI 50
+#define KP 50
 #define KD 0
-#define KP 10
-#define ACCELEROMETER_GYROSCOPE_RATIO 1
+#define ACCELEROMETER_GYROSCOPE_RATIO 0.8
+#define POSITION_TO_ANGLE 0.16
+#define RESET_VALUE 20
 
-int pidTransferFunction(
+
+int getError(
     int currentAccelerometerAcceleration, 
-    int currentGyroscopeSpeed, 
+    int currentGyroscopeSpeed,
     int angleTarget
-);                                        // PID transfer function
-int getError(int newError)                // Get error (command - measured)
+);                 		                  // Get error (command - measured)
+int pidTransferFunction(int newError);    // PID transfer function
 void initializePid(void);                 // Reset zero
+void resetMeasure(void);				  // Reset measure
 
 #endif // __SEGWAY__PID__
