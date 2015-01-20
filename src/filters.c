@@ -3,7 +3,7 @@
 /*
  * Difference
  */
-int difference(int previousState, int newState)
+int difference(int newState, int previousState)
 {
 	return checkOverflow((long)newState - (long)previousState);
 }
@@ -29,7 +29,7 @@ int highPassFilter(int previousState, int currentVariation)
  */
 int differentiate(int previousState, int currentState)
 {
-	return (currentState - previousState) / TIME_CONSTANT;
+	return difference(currentState, previousState) / TIME_CONSTANT;
 }
 
 /**

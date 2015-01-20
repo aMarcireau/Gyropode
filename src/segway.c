@@ -36,22 +36,30 @@ void initialize(void);
  */
 void main(void)
 {
+	int speedDebug;
+
+
 	initialize();
 
 	while (1) {
 		if (!SW2) {
 			LED = 1;
+			setMotorsSpeed(0);
 			initializePid();
 		} else if (timer2Flag) {
 			timer2Flag = 0;
 			LED = ~LED;
 			getAccelerations(accelerations);
 			getRotations(rotations);
-			setMotorsSpeed(pidTransferFunction(
-				accelerations[2],
-				-rotations[0],
-				TARGET_ANGLE
-			));
+			setMotorsSpeed(
+				pidTransferFunction(
+					getError(
+						accelerations[2],
+						-rotations[0],
+						TARGET_ANGLE
+					)
+				)
+			);
 		}
 	}
 }

@@ -48,7 +48,7 @@ void setMotorsSpeed(int speed)
 /**
  * Filter speed
  */
-char speedFilter(int speed)
+int filterSpeed(int speed)
 {
 	if (speed > SPEED_MAX) {
 		speed = SPEED_MAX;

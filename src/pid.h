@@ -7,12 +7,18 @@
 #include "filters.h"
 #include "motors.h"
 
-#define KI 1
-#define KD 1
-#define KP 1
-#define ACCELEROMETER_GYROSCOPE_RATIO 0.5
+#define HEIGHT 0.1
+#define KI 0
+#define KD 0
+#define KP 10
+#define ACCELEROMETER_GYROSCOPE_RATIO 1
 
-int pidTransferFunction(int currentAccelerometerAcceleration, int currentGyroscopeSpeed, int angleTarget); // PID transfer function
-void initializePid(void);                                                                                  // Reset zero
+int pidTransferFunction(
+    int currentAccelerometerAcceleration, 
+    int currentGyroscopeSpeed, 
+    int angleTarget
+);                                        // PID transfer function
+int getError(int newError)                // Get error (command - measured)
+void initializePid(void);                 // Reset zero
 
 #endif // __SEGWAY__PID__

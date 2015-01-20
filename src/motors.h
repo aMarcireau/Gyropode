@@ -11,6 +11,6 @@
 void initializeMotors(void); 						   // Initialize motors
 void setMotorsSpeed(int speed);				           // Set motors speed
 void setMotorSpeed(unsigned char motorId, int speed);  // Set motor speed
-char speedFilter(int);								   // Filter speed
+int filterSpeed(int);								   // Filter speed
 
 #endif // __SEGWAY__MOTORS__
