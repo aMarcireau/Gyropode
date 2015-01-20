@@ -3,25 +3,9 @@
 /*
  * Difference
  */
-int difference(int previousState, int newState)
+int difference(int newState, int previousState)
 {
 	return checkOverflow((long)newState - (long)previousState);
-}
-
-/*
- * Low-pass filter
- */
-int lowPassFilter(int previousState, int currentValue)
-{
-	return segment(currentValue, previousState, LOW_PASS_SMOOTH_FACTOR);
-}
-
-/*
- * High-pass filter
- */
-int highPassFilter(int previousState, int currentVariation)
-{
-	return segment(previousState, currentVariation, HIGH_PASS_SMOOTH_FACTOR);
 }
 
 /**
@@ -29,7 +13,7 @@ int highPassFilter(int previousState, int currentVariation)
  */
 int differentiate(int previousState, int currentState)
 {
-	return (currentState - previousState) / TIME_CONSTANT;
+	return checkOverflow((long)((float)difference(currentState, previousState) / (float)TIME_CONSTANT));
 }
 
 /**
@@ -37,7 +21,7 @@ int differentiate(int previousState, int currentState)
  */
 int integrate(int previousState, int currentVariation)
 {
-	return checkOverflow((long)previousState + (long)currentVariation * TIME_CONSTANT);
+	return checkOverflow((long)previousState + (long)((float)currentVariation * (float)TIME_CONSTANT));
 }
 
 /**

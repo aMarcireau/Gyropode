@@ -5,42 +5,64 @@
  */
 int accelerometerSpeed;
 int accelerometerPosition;
-int gyroscopePosition;
-int measuredGyroscopePosition;
-int speed;
+int gyroscopeAngle;
+int error;
+int integratedError;
+int resetCounter;
 
 /**
- * Reset zero
+ * Initialize PID
  */
 void initializePid(void)
 {
+	resetMeasure();
+    error = 0;
+    integratedError = 0;
+
+}
+
+/**
+ * Reset measure
+ */
+void resetMeasure(void)
+{
     accelerometerSpeed = 0;
     accelerometerPosition = 0;
-    gyroscopePosition = 0;
-    measuredGyroscopePosition = 0;
-    speed = 0;    
+    gyroscopeAngle = 0;
+    resetCounter = 0;
+}
+
+
+/**
+ * Get error (command - measured)
+ */
+int getError(int accelerometerAcceleration, int gyroscopeSpeed, int angleTarget) {
+	resetCounter++;
+	if (resetCounter >= RESET_VALUE) {
+		resetMeasure();
+	}
+
+	accelerometerSpeed = integrate(accelerometerSpeed, accelerometerAcceleration);
+	accelerometerPosition = integrate(accelerometerPosition, accelerometerSpeed);
+	gyroscopeAngle = integrate(gyroscopeAngle, gyroscopeSpeed);
+
+	return difference(angleTarget, segment(
+		(int)((float)POSITION_TO_ANGLE * (float)accelerometerPosition), 
+		gyroscopeAngle,
+		ACCELEROMETER_GYROSCOPE_RATIO
+	));
 }
 
 /**
  * PID transfer function
  */
-char pidTransferFunction(int accelerometerAcceleration, int gyroscopeSpeed, int angleTarget) {
-	int newMeasuredGyroscopePosition;
-	
-	accelerometerSpeed = integrate(accelerometerSpeed, accelerometerAcceleration);
-	accelerometerPosition = lowPassFilter(accelerometerPosition, integrate(accelerometerPosition, accelerometerSpeed));
+int pidTransferFunction(int newError) {
+	int speed = filterSpeed(checkOverflow(
+		(long)((float)KP * (float)newError) +
+		(long)((float)KD * (float)differentiate(error, newError)) +
+		(long)((float)KI * (float)integrate(integratedError, newError))
+	));
+	error = newError;
 
-	newMeasuredGyroscopePosition = integrate(gyroscopePosition, gyroscopeSpeed);
-	gyroscopePosition = highPassFilter(gyroscopePosition, difference(measuredGyroscopePosition, newMeasuredGyroscopePosition));
-	measuredGyroscopePosition = newMeasuredGyroscopePosition;
-
-	speed = (int)((float)integrate(
-		speed,
-		checkOverflow(
-			(int)((float)segment(accelerometerPosition, gyroscopePosition, ACCELEROMETER_GYROSCOPE_RATIO) * (float)KP) + 
-			(int)((float)segment(accelerometerSpeed, gyroscopeSpeed, ACCELEROMETER_GYROSCOPE_RATIO) * (float)KD)
-		)
-	) * (float)KI);
-	
-	return speedFilter(speed);
+	return speed;
 }

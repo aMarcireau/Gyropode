@@ -17,19 +17,29 @@ void initializeMotors(void)
 /**
  * Set motor speed
  */
-void setMotorSpeed(unsigned char motorId, char speed)
+void setMotorSpeed(unsigned char motorId, int speed)
 {
+	long realSpeed;
+	unsigned char highByte;
+	unsigned char lowByte;
+
+	realSpeed = (long)SPEED_NULL + (long)speed;
+	highByte = realSpeed >> 8;
+	lowByte = realSpeed & 0xff;
+
 	if (motorId == 'r') {
-		PCA0CPH0 = 244 + speed;
+		PCA0CPL0 = lowByte;
+		PCA0CPH0 = highByte;
 	} else if (motorId == 'l') {
-		PCA0CPH1 = 244 + speed;
+		PCA0CPL1 = lowByte;
+		PCA0CPH1 = highByte;
 	}
 }
 
 /**
  * Set motors speed
  */
-void setMotorsSpeed(char speed)
+void setMotorsSpeed(int speed)
 {
 	setMotorSpeed('r', speed);
 	setMotorSpeed('l', -speed);
@@ -38,7 +48,7 @@ void setMotorsSpeed(char speed)
 /**
  * Filter speed
  */
-char speedFilter(int speed)
+int filterSpeed(int speed)
 {
 	if (speed > SPEED_MAX) {
 		speed = SPEED_MAX;
@@ -46,5 +56,5 @@ char speedFilter(int speed)
 		speed = SPEED_MIN;
 	}
 
-	return (char)speed;
+	return speed;
 }
