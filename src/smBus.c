@@ -22,7 +22,6 @@ void initializeSmBus(void)
 
     SMB0CF = 0x5d;  // Use Timer1 overflows as SMBus clock source
     SMB0CF |= 0x80; // Enable SMBus
-    initializeTimer1(SYSTEM_CLOCK / SM_BUS_FREQUENCY / 4 / 3);
 }
 
 /**

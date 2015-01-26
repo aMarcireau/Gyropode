@@ -11,9 +11,9 @@ int difference(int newState, int previousState)
 /**
  * Discrete differentiate
  */
-int differentiate(int previousState, int currentState)
+int differentiate(int newState, int previousState)
 {
-	return checkOverflow((long)((float)difference(currentState, previousState) / (float)TIME_CONSTANT));
+	return checkOverflow((long)((float)difference(newState, previousState) / (float)TIME_CONSTANT));
 }
 
 /**

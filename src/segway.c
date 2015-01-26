@@ -11,6 +11,8 @@
 #include "gy80.h"
 #include "timers.h"
 #include "pid.h"
+#include "uart.h"
+#include "filters.h"
 
 /**
  * Constants
@@ -24,7 +26,7 @@ sbit SW2 = P0 ^ 7;
  */
 bit timer2Flag;
 int accelerations[3];
-int rotations[3];
+int target;
 
 /**
  * Function prototypes
@@ -43,19 +45,14 @@ void main(void)
 			LED = 1;
 			setMotorsSpeed(0);
 			initializePid();
+			getAccelerations(accelerations);
+			target = accelerations[2];
 		} else if (timer2Flag) {
 			timer2Flag = 0;
 			LED = ~LED;
 			getAccelerations(accelerations);
-			getRotations(rotations);
 			setMotorsSpeed(
-				pidTransferFunction(
-					getError(
-						-accelerations[2],
-						rotations[0],
-						TARGET_ANGLE
-					)
-				)
+				pidTransferFunction(difference(accelerations[2], target))
 			);
 		}
 	}
@@ -70,12 +67,15 @@ void initialize(void)
 	initializeSystemClock();
 	initializePorts();
 	initializeMotors();
+	initializeTimer1();
 	initializeSmBus();
-	initializeTimer2();
+	initializeUart();
+	initializeTimer2(10000);
 	timer2Flag = 0;
 	EA = 1;
 	initializeGy80();
 	initializePid();
+	target = 0;
 }
 
 void timer2InterruptServiceRoutine(void) interrupt INTERRUPT_TIMER2

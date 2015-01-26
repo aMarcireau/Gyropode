@@ -5,7 +5,7 @@
 #include <C8051f310_defs.h>
 #include <limits.h>
 
-#define TIME_CONSTANT 0.03
+#define TIME_CONSTANT 1
 
 int difference(int previousState, int newState);             // Difference
 int differentiate(int previousState, int currentState);      // Discrete differentiate
