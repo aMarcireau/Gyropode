@@ -4,11 +4,6 @@
 #include <compiler_defs.h>
 #include <C8051f310_defs.h>
 
-#include "timers.h"
-
-#define SYSTEM_CLOCK 24500000
-#define SM_BUS_FREQUENCY 10000
-
 void initializeSmBus(void);                                               // Initialize SMBus
 void runSmBus(void);                                                      // Run SMBus
 void startSmBus(void);                                                    // Start SMBus
